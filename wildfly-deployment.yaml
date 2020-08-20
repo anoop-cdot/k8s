@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.service.type: NodePort
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: wildfly
+  name: wildfly
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: wildfly
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.service.type: NodePort
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: wildfly
+    spec:
+      containers:
+      - env:
+        - name: DB_NAME
+          value: indb
+        - name: DB_PASS
+          value: ccsp@in
+        - name: DB_URI
+          value: postgresql:5432
+        - name: DB_USER
+          value: in_ccsp
+        - name: WILDFLY_PASS
+          value: admin@1234
+        - name: WILDFLY_USER
+          value: admin
+        image: 192.168.166.106:5000/anoop1
+        imagePullPolicy: ""
+        name: ccsp-server
+        ports:
+        - containerPort: 9091
+        - containerPort: 9090
+        - containerPort: 5784
+        resources: {}
+        volumeMounts:
+        - mountPath: /opt/jboss/wildfly/standalone/deployments
+          name: wildfly-claim0
+        - mountPath: /ccsp-3.3.0_logs
+          name: wildfly-claim1
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes:
+      - name: wildfly-claim0
+        persistentVolumeClaim:
+          claimName: wildfly-claim0
+      - name: wildfly-claim1
+        persistentVolumeClaim:
+          claimName: wildfly-claim1
+status: {}

@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.service.type: NodePort
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: postgresql
+  name: postgresql
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      io.kompose.service: postgresql
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.service.type: NodePort
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: postgresql
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_DB
+          value: indb
+        - name: POSTGRES_PASSWORD
+          value: ccsp@in
+        - name: POSTGRES_USER
+          value: in_ccsp
+        image: postgres:9.6
+        imagePullPolicy: ""
+        name: ccsp-db
+        ports:
+        - containerPort: 5432
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data/
+          name: postgresql-claim0
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes:
+      - name: postgresql-claim0
+        persistentVolumeClaim:
+          claimName: postgresql-claim0
+status: {}
